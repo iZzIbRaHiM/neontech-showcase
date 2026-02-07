@@ -1,6 +1,9 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Check, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 const plans = [
   {
@@ -29,6 +32,18 @@ const plans = [
 export default function PricingSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleGetStarted = (planName: string) => {
+    if (!user) {
+      toast.info(`Sign in to get started with the ${planName} plan`);
+      navigate("/auth");
+    } else {
+      toast.success(`You selected the ${planName} plan! Browse products to start shopping.`);
+      navigate("/#products");
+    }
+  };
 
   return (
     <section id="pricing" className="py-32 relative" ref={ref}>
@@ -84,6 +99,7 @@ export default function PricingSection() {
               </ul>
 
               <button
+                onClick={() => handleGetStarted(plan.name)}
                 className={`w-full py-3 rounded-lg font-display font-semibold text-sm transition-all duration-300 ${
                   plan.popular
                     ? "gradient-neon text-primary-foreground hover:opacity-90"

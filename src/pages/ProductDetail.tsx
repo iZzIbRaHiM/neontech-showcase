@@ -1,33 +1,55 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Star, ShoppingCart, Check, Heart, Loader2 } from "lucide-react";
-import { products } from "@/data/products";
 import { useState } from "react";
-import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useProduct } from "@/hooks/useProducts";
+import { useWishlist } from "@/hooks/useWishlist";
+import { toast } from "sonner";
 
 export default function ProductDetail() {
   const { id } = useParams();
-  const product = products.find((p) => p.id === id);
+  const { product, loading } = useProduct(id);
   const [selectedColor, setSelectedColor] = useState(0);
-  const [liked, setLiked] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const { isInWishlist, loading: wishlistLoading, toggleWishlist } = useWishlist(id);
 
-  if (!product) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="font-display text-3xl font-bold mb-4">Product not found</h1>
-          <Link to="/" className="text-primary hover:underline">Go back home</Link>
-        </div>
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="pt-24 pb-16">
+          <div className="container mx-auto px-6 flex items-center justify-center py-16">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="pt-24 pb-16">
+          <div className="container mx-auto px-6 text-center py-16">
+            <h1 className="font-display text-3xl font-bold mb-4">Product not found</h1>
+            <Link to="/" className="text-primary hover:underline">Go back home</Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  const colors = product.colors || ["Default"];
+  const features = product.features || [];
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -35,7 +57,7 @@ export default function ProductDetail() {
       return;
     }
     setAddingToCart(true);
-    await addToCart(product.id, 1, product.colors[selectedColor]);
+    await addToCart(product.id, 1, colors[selectedColor]);
     setAddingToCart(false);
   };
 
@@ -60,11 +82,17 @@ export default function ProductDetail() {
               transition={{ duration: 0.6 }}
               className="glass-card rounded-2xl overflow-hidden aspect-square"
             >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+              {product.image_url ? (
+                <img
+                  src={product.image_url}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center">
+                  <span className="text-muted-foreground">No Image</span>
+                </div>
+              )}
             </motion.div>
 
             {/* Details */}
@@ -75,76 +103,80 @@ export default function ProductDetail() {
               className="flex flex-col justify-center"
             >
               <span className="text-xs text-primary font-medium uppercase tracking-wider mb-2">
-                {product.category}
+                {product.category || "General"}
               </span>
 
               <h1 className="font-display text-4xl md:text-5xl font-bold mb-2">
                 {product.name}
               </h1>
-              <p className="text-xl text-muted-foreground mb-6">{product.tagline}</p>
+              <p className="text-xl text-muted-foreground mb-6">{product.tagline || ""}</p>
 
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${i < Math.floor(product.rating) ? "fill-neon-blue text-neon-blue" : "text-muted"}`}
+                      className={`w-4 h-4 ${i < Math.floor(product.rating || 0) ? "fill-neon-blue text-neon-blue" : "text-muted"}`}
                     />
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {product.rating} · {product.reviews.toLocaleString()} reviews
+                  {product.rating || 0} · {(product.reviews_count || 0).toLocaleString()} reviews
                 </span>
               </div>
 
               <p className="text-muted-foreground leading-relaxed mb-8">
-                {product.description}
+                {product.description || "No description available."}
               </p>
 
               {/* Colors */}
-              <div className="mb-8">
-                <span className="text-sm text-muted-foreground mb-3 block">
-                  Color: <span className="text-foreground">{product.colors[selectedColor]}</span>
-                </span>
-                <div className="flex gap-3">
-                  {product.colors.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setSelectedColor(i)}
-                      className={`w-10 h-10 rounded-full border-2 transition-all ${
-                        selectedColor === i
-                          ? "border-primary neon-glow-blue"
-                          : "border-border hover:border-muted-foreground"
-                      }`}
-                      style={{
-                        background: `hsl(${190 + i * 70} 60% ${30 + i * 10}%)`,
-                      }}
-                    />
-                  ))}
+              {colors.length > 0 && colors[0] !== "Default" && (
+                <div className="mb-8">
+                  <span className="text-sm text-muted-foreground mb-3 block">
+                    Color: <span className="text-foreground">{colors[selectedColor]}</span>
+                  </span>
+                  <div className="flex gap-3">
+                    {colors.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedColor(i)}
+                        className={`w-10 h-10 rounded-full border-2 transition-all ${
+                          selectedColor === i
+                            ? "border-primary neon-glow-blue"
+                            : "border-border hover:border-muted-foreground"
+                        }`}
+                        style={{
+                          background: `hsl(${190 + i * 70} 60% ${30 + i * 10}%)`,
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Features */}
-              <div className="grid grid-cols-2 gap-2 mb-8">
-                {product.features.map((feature) => (
-                  <div key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                    {feature}
-                  </div>
-                ))}
-              </div>
+              {features.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mb-8">
+                  {features.map((feature) => (
+                    <div key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                      {feature}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Price & Actions */}
               <div className="flex items-end gap-3 mb-8">
                 <span className="font-display text-4xl font-bold">${product.price}</span>
-                {product.originalPrice && (
+                {product.original_price && (
                   <span className="text-lg text-muted-foreground line-through mb-1">
-                    ${product.originalPrice}
+                    ${product.original_price}
                   </span>
                 )}
-                {product.originalPrice && (
+                {product.original_price && (
                   <span className="text-sm text-secondary font-bold mb-1">
-                    Save ${product.originalPrice - product.price}
+                    Save ${product.original_price - product.price}
                   </span>
                 )}
               </div>
@@ -152,11 +184,13 @@ export default function ProductDetail() {
               <div className="flex gap-3">
                 <button
                   onClick={handleAddToCart}
-                  disabled={addingToCart}
+                  disabled={addingToCart || !product.in_stock}
                   className="flex-1 py-4 rounded-lg gradient-neon text-primary-foreground font-display font-semibold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-all neon-glow-blue disabled:opacity-50"
                 >
                   {addingToCart ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : !product.in_stock ? (
+                    "Out of Stock"
                   ) : (
                     <>
                       <ShoppingCart className="w-5 h-5" /> Add to Cart
@@ -164,17 +198,19 @@ export default function ProductDetail() {
                   )}
                 </button>
                 <button
-                  onClick={() => {
-                    setLiked(!liked);
-                    toast(liked ? "Removed from favorites" : "Added to favorites");
-                  }}
+                  onClick={toggleWishlist}
+                  disabled={wishlistLoading}
                   className={`w-14 rounded-lg border flex items-center justify-center transition-all ${
-                    liked
+                    isInWishlist
                       ? "border-secondary bg-secondary/10 text-secondary neon-glow-pink"
                       : "border-border text-muted-foreground hover:border-secondary hover:text-secondary"
                   }`}
                 >
-                  <Heart className={`w-5 h-5 ${liked ? "fill-current" : ""}`} />
+                  {wishlistLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Heart className={`w-5 h-5 ${isInWishlist ? "fill-current" : ""}`} />
+                  )}
                 </button>
               </div>
             </motion.div>

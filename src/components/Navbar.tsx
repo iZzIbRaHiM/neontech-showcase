@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Menu, X, Zap } from "lucide-react";
+import { ShoppingCart, Menu, X, Zap, User, LogOut, Package } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { label: "Products", href: "/#products" },
@@ -11,6 +20,8 @@ const navLinks = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { itemCount } = useCart();
 
   return (
     <motion.nav
@@ -41,13 +52,52 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="flex items-center gap-4">
-          <button className="relative p-2 text-muted-foreground hover:text-primary transition-colors">
+        <div className="flex items-center gap-3">
+          <Link 
+            to="/cart" 
+            className="relative p-2 text-muted-foreground hover:text-primary transition-colors"
+          >
             <ShoppingCart className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-secondary text-[10px] flex items-center justify-center text-secondary-foreground font-bold">
-              0
-            </span>
-          </button>
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-secondary text-[10px] flex items-center justify-center text-secondary-foreground font-bold">
+                {itemCount > 9 ? "9+" : itemCount}
+              </span>
+            )}
+          </Link>
+
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-2 text-muted-foreground hover:text-primary transition-colors">
+                  <User className="w-5 h-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link to="/orders" className="flex items-center gap-2">
+                    <Package className="w-4 h-4" />
+                    My Orders
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => signOut()} 
+                  className="flex items-center gap-2 text-destructive"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link
+              to="/auth"
+              className="hidden md:flex px-4 py-2 rounded-lg gradient-neon text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Sign In
+            </Link>
+          )}
+
           <button
             className="md:hidden p-2 text-muted-foreground"
             onClick={() => setIsOpen(!isOpen)}
@@ -76,6 +126,15 @@ export default function Navbar() {
                   {link.label}
                 </a>
               ))}
+              {!user && (
+                <Link
+                  to="/auth"
+                  onClick={() => setIsOpen(false)}
+                  className="text-primary font-medium"
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

@@ -2,6 +2,13 @@ import { Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <footer className="border-t border-border/50 py-12">
       <div className="container mx-auto px-6">
@@ -16,9 +23,27 @@ export default function Footer() {
           </Link>
 
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <a href="#products" className="hover:text-primary transition-colors">Products</a>
-            <a href="#features" className="hover:text-primary transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-primary transition-colors">Pricing</a>
+            <Link
+              to="/#products"
+              onClick={() => scrollToSection("products")}
+              className="hover:text-primary transition-colors"
+            >
+              Products
+            </Link>
+            <Link
+              to="/#features"
+              onClick={() => scrollToSection("features")}
+              className="hover:text-primary transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              to="/#pricing"
+              onClick={() => scrollToSection("pricing")}
+              className="hover:text-primary transition-colors"
+            >
+              Pricing
+            </Link>
           </div>
 
           <p className="text-xs text-muted-foreground">

@@ -1,17 +1,22 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Star, ShoppingCart, Check, Heart } from "lucide-react";
+import { ArrowLeft, Star, ShoppingCart, Check, Heart, Loader2 } from "lucide-react";
 import { products } from "@/data/products";
 import { useState } from "react";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const [selectedColor, setSelectedColor] = useState(0);
   const [liked, setLiked] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const { addToCart } = useCart();
+  const { user } = useAuth();
 
   if (!product) {
     return (
@@ -24,8 +29,14 @@ export default function ProductDetail() {
     );
   }
 
-  const handleAddToCart = () => {
-    toast.success(`${product.name} added to cart!`);
+  const handleAddToCart = async () => {
+    if (!user) {
+      toast.error("Please sign in to add items to cart");
+      return;
+    }
+    setAddingToCart(true);
+    await addToCart(product.id, 1, product.colors[selectedColor]);
+    setAddingToCart(false);
   };
 
   return (
@@ -141,9 +152,16 @@ export default function ProductDetail() {
               <div className="flex gap-3">
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 py-4 rounded-lg gradient-neon text-primary-foreground font-display font-semibold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-all neon-glow-blue"
+                  disabled={addingToCart}
+                  className="flex-1 py-4 rounded-lg gradient-neon text-primary-foreground font-display font-semibold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-all neon-glow-blue disabled:opacity-50"
                 >
-                  <ShoppingCart className="w-5 h-5" /> Add to Cart
+                  {addingToCart ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5" /> Add to Cart
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={() => {

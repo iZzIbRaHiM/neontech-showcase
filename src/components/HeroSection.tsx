@@ -14,9 +14,7 @@ export default function HeroSection() {
       {/* Grid overlay */}
       <div className="absolute inset-0 grid-bg opacity-30" />
 
-      {/* Floating orbs - blood red neon */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/20 blur-[100px] animate-float animate-pulse-neon" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-primary/15 blur-[120px] animate-float-delayed animate-pulse-neon" />
+      {/* Floating orbs */}
       <div className="absolute top-1/2 right-1/3 w-48 h-48 rounded-full bg-accent/10 blur-[80px] animate-pulse-neon" />
       <div className="absolute bottom-1/3 left-1/3 w-56 h-56 rounded-full bg-secondary/15 blur-[90px] animate-float" />
 

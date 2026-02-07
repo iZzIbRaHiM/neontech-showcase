@@ -14,10 +14,11 @@ export default function HeroSection() {
       {/* Grid overlay */}
       <div className="absolute inset-0 grid-bg opacity-30" />
 
-      {/* Floating orbs */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-neon-blue/10 blur-[100px] animate-float" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-neon-pink/10 blur-[120px] animate-float-delayed" />
-      <div className="absolute top-1/2 right-1/3 w-48 h-48 rounded-full bg-neon-purple/8 blur-[80px] animate-pulse-neon" />
+      {/* Floating orbs - blood red neon */}
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/20 blur-[100px] animate-float animate-pulse-neon" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-primary/15 blur-[120px] animate-float-delayed animate-pulse-neon" />
+      <div className="absolute top-1/2 right-1/3 w-48 h-48 rounded-full bg-accent/10 blur-[80px] animate-pulse-neon" />
+      <div className="absolute bottom-1/3 left-1/3 w-56 h-56 rounded-full bg-secondary/15 blur-[90px] animate-float" />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 text-center">
@@ -35,11 +36,11 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-6"
+          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-6 animate-neon-flicker"
         >
           The Future is
           <br />
-          <span className="gradient-neon-text">Neon Bright</span>
+          <span className="gradient-neon-text">Blood Red</span>
         </motion.h1>
 
         <motion.p

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+    </linearGradient>
+    <filter id="neonGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Red circular background with glow -->
+  <circle cx="32" cy="32" r="32" fill="url(#neonGradient)" filter="url(#neonGlow)"/>
+  <!-- Lightning bolt icon with neon glow -->
+  <path d="M35 10L20 34h10l-4 20 19-24H35l4-20z" fill="white" stroke="white" stroke-width="1" stroke-linejoin="round" filter="url(#neonGlow)"/>
+</svg>

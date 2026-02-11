@@ -58,7 +58,7 @@ In **Settings → Environment variables**, add:
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_PUBLISHABLE_KEY`
-- `NODE_VERSION=20`
+- `NODE_VERSION=20` (or rely on `.nvmrc`)
 
 ### Important: Pages does not need a deploy command
 

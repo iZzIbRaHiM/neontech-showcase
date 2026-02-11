@@ -44,9 +44,11 @@ npm run test
 npm run build
 ```
 
+> `npm run build` now generates both `dist/index.html` and `dist/404.html` (copy of index) for safe SPA fallback.
+
 ## Deploy to Cloudflare Pages (recommended)
 
-Use these exact settings in **Cloudflare Pages → Create project → Build settings**:
+Use these settings in **Cloudflare Pages → Create project → Build settings**:
 
 - **Framework preset:** `Vite`
 - **Production branch:** your deploy branch (`main`/`master`)
@@ -60,34 +62,32 @@ In **Settings → Environment variables**, add:
 - `VITE_SUPABASE_PUBLISHABLE_KEY`
 - `NODE_VERSION=20` (or rely on `.nvmrc`)
 
-### Important: Pages does not need a deploy command
+### Important
 
-If you are using **Cloudflare Pages Git integration**, do **not** run `wrangler deploy` in the build command.
-Only build the app (`npm run build`) and let Pages publish the `dist` output.
+For Pages Git integration, do **not** run `wrangler deploy` inside the build command. Build only (`npm run build`) and let Pages publish `dist`.
 
-## If you deploy with Wrangler CLI instead
+## Deploy with Wrangler CLI
 
-Your log error came from running a Wrangler deploy command without Worker entry/asset settings.
-`wrangler.toml` now includes an `[assets]` section, so this static app can be deployed with Wrangler as assets.
+Your previous failure came from `_redirects` containing `/* /index.html 200`, which Wrangler asset validation rejects as an infinite redirect loop.
 
-Use one of these commands:
+This repo now uses Wrangler-native SPA handling via `wrangler.toml`:
 
-```bash
-npm run build
-npx wrangler pages deploy dist
-```
+- `[assets].directory = "./dist"`
+- `[assets].not_found_handling = "single-page-application"`
 
-or
+Deploy commands:
 
 ```bash
 npm run build
 npx wrangler deploy
 ```
 
-## SPA routing on Cloudflare
+or
 
-- `public/_redirects` handles SPA fallback when deployed on Cloudflare Pages.
-- `wrangler.toml` uses `not_found_handling = "single-page-application"` for Wrangler asset deployments.
+```bash
+npm run build
+npx wrangler pages deploy dist
+```
 
 ## Project scripts
 
@@ -95,5 +95,5 @@ npx wrangler deploy
 - `npm run lint` — lint source code
 - `npm run test` — run tests once
 - `npm run test:watch` — run tests in watch mode
-- `npm run build` — production build
+- `npm run build` — production build + SPA 404 fallback
 - `npm run preview` — preview production build locally

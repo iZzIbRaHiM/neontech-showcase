@@ -73,7 +73,7 @@ Your previous failure came from `_redirects` containing `/* /index.html 200`, wh
 This repo now uses Wrangler-native SPA handling via `wrangler.toml`:
 
 - `main = "worker/index.ts"` (worker entrypoint that serves static assets)
-- `[assets].binding = "ASSETS"`
+- `[assets].binding = "STATIC_ASSETS"`
 - `[assets].directory = "./dist"`
 - `[assets].not_found_handling = "single-page-application"`
 
@@ -83,6 +83,9 @@ Deploy commands:
 npm run build
 npx wrangler deploy
 ```
+
+If your CI uses `npx wrangler versions upload`, this config now works with Pages projects because the assets binding is **not** named `ASSETS` (that name is reserved by Pages).
+
 
 or
 
@@ -103,4 +106,4 @@ npx wrangler pages deploy dist
 
 ### If you still see "Hello World"
 
-That means a default Worker script is still being served. Deploy this repo with `npx wrangler deploy` so the `worker/index.ts` + `ASSETS` config replaces it.
+That means a default Worker script is still being served. Deploy this repo with `npx wrangler deploy` so the `worker/index.ts` + `STATIC_ASSETS` config replaces it.

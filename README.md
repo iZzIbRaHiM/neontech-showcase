@@ -1,73 +1,85 @@
-# Welcome to your Lovable project
+# NeonTech Showcase Store
 
-## Project info
+A production-ready React + Vite storefront with Supabase-backed authentication, products, cart, checkout, and order history pages.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- Product listing and product detail pages
+- Cart and checkout flow
+- User authentication (Supabase Auth)
+- Orders list and order detail views
+- Responsive UI with Tailwind + shadcn/ui components
 
-There are several ways of editing your application.
+## Tech stack
 
-**Use Lovable**
+- React 18 + TypeScript
+- Vite 5
+- Tailwind CSS + shadcn/ui
+- Supabase (`@supabase/supabase-js`)
+- React Router + React Query
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Local development
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The dev server runs on `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Required environment variables
 
-**Use GitHub Codespaces**
+Create a `.env` file in the project root:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_ANON_KEY
+```
 
-## What technologies are used for this project?
+## Build and test
 
-This project is built with:
+```bash
+npm run lint
+npm run test
+npm run build
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deploy to Cloudflare Pages
 
-## How can I deploy this project?
+This app is configured for static deployment to Cloudflare Pages.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Build settings
 
-## Can I connect a custom domain to my Lovable project?
+- Framework preset: `None`
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Node version: `20` (recommended)
 
-Yes, you can!
+### SPA routing
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+`public/_redirects` is included so deep links (for example `/product/123` or `/orders`) resolve correctly.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Environment variables in Cloudflare
+
+Add these in your Cloudflare Pages project settings:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+### Optional Wrangler deploy
+
+A `wrangler.toml` file is included with `pages_build_output_dir = "./dist"` so you can deploy via CLI:
+
+```bash
+npm run build
+npx wrangler pages deploy dist
+```
+
+## Project scripts
+
+- `npm run dev` — start dev server
+- `npm run lint` — lint source code
+- `npm run test` — run tests once
+- `npm run test:watch` — run tests in watch mode
+- `npm run build` — production build
+- `npm run preview` — preview production build locally

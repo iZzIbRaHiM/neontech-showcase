@@ -44,12 +44,12 @@ npm run test
 npm run build
 ```
 
-## Deploy to Cloudflare Pages (recommended settings)
+## Deploy to Cloudflare Pages (recommended)
 
 Use these exact settings in **Cloudflare Pages → Create project → Build settings**:
 
 - **Framework preset:** `Vite`
-- **Production branch:** your main branch (`main` or `master`)
+- **Production branch:** your deploy branch (`main`/`master`)
 - **Build command:** `npm run build`
 - **Build output directory:** `dist`
 - **Root directory:** `/` (repo root)
@@ -60,22 +60,34 @@ In **Settings → Environment variables**, add:
 - `VITE_SUPABASE_PUBLISHABLE_KEY`
 - `NODE_VERSION=20`
 
-### Why the previous Cloudflare build likely failed
+### Important: Pages does not need a deploy command
 
-If Cloudflare detects a `bun.lockb`, it can choose Bun during install/build. This repo is set up for npm (`package-lock.json` + npm scripts). The Bun lockfile has been removed to avoid that mismatch.
+If you are using **Cloudflare Pages Git integration**, do **not** run `wrangler deploy` in the build command.
+Only build the app (`npm run build`) and let Pages publish the `dist` output.
 
-### SPA routing on Cloudflare Pages
+## If you deploy with Wrangler CLI instead
 
-`public/_redirects` is included so deep links (for example `/product/123`, `/checkout`, `/orders`) resolve to `index.html`.
+Your log error came from running a Wrangler deploy command without Worker entry/asset settings.
+`wrangler.toml` now includes an `[assets]` section, so this static app can be deployed with Wrangler as assets.
 
-## Optional Wrangler deploy
-
-A `wrangler.toml` file is included with `pages_build_output_dir = "./dist"` so you can deploy via CLI:
+Use one of these commands:
 
 ```bash
 npm run build
 npx wrangler pages deploy dist
 ```
+
+or
+
+```bash
+npm run build
+npx wrangler deploy
+```
+
+## SPA routing on Cloudflare
+
+- `public/_redirects` handles SPA fallback when deployed on Cloudflare Pages.
+- `wrangler.toml` uses `not_found_handling = "single-page-application"` for Wrangler asset deployments.
 
 ## Project scripts
 

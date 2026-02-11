@@ -72,6 +72,8 @@ Your previous failure came from `_redirects` containing `/* /index.html 200`, wh
 
 This repo now uses Wrangler-native SPA handling via `wrangler.toml`:
 
+- `main = "worker/index.ts"` (worker entrypoint that serves static assets)
+- `[assets].binding = "ASSETS"`
 - `[assets].directory = "./dist"`
 - `[assets].not_found_handling = "single-page-application"`
 
@@ -97,3 +99,8 @@ npx wrangler pages deploy dist
 - `npm run test:watch` — run tests in watch mode
 - `npm run build` — production build + SPA 404 fallback
 - `npm run preview` — preview production build locally
+
+
+### If you still see "Hello World"
+
+That means a default Worker script is still being served. Deploy this repo with `npx wrangler deploy` so the `worker/index.ts` + `ASSETS` config replaces it.
